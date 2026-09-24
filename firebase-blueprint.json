@@ -1,0 +1,216 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile and account information",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "User unique identifier matching auth UID"
+        },
+        "email": {
+          "type": "string",
+          "description": "User email address"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Display name of the user"
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "User avatar image URL"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Account creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Account update timestamp"
+        }
+      },
+      "required": ["uid", "email", "createdAt"]
+    },
+    "Favorite": {
+      "title": "Favorite",
+      "description": "A saved restaurant or food venue",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "ID of the user who saved the favorite"
+        },
+        "placeId": {
+          "type": "string",
+          "description": "Google Place ID or venue identifier"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the restaurant"
+        },
+        "rating": {
+          "type": "number",
+          "description": "Rating out of 5"
+        },
+        "userRatingsTotal": {
+          "type": "number",
+          "description": "Total number of user ratings"
+        },
+        "address": {
+          "type": "string",
+          "description": "Human-readable address"
+        },
+        "photoUrl": {
+          "type": "string",
+          "description": "URL to photo"
+        },
+        "cuisine": {
+          "type": "string",
+          "description": "Type of cuisine"
+        },
+        "priceLevel": {
+          "type": "number",
+          "description": "Price level 1 to 4"
+        },
+        "lat": {
+          "type": "number",
+          "description": "Latitude coordinate"
+        },
+        "lng": {
+          "type": "number",
+          "description": "Longitude coordinate"
+        },
+        "openNow": {
+          "type": "boolean",
+          "description": "Whether venue is currently open"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when favorited"
+        }
+      },
+      "required": ["userId", "placeId", "name", "createdAt"]
+    },
+    "SearchHistory": {
+      "title": "SearchHistory",
+      "description": "History of user's search queries",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "ID of the user who performed search"
+        },
+        "query": {
+          "type": "string",
+          "description": "Natural language query string",
+          "maxLength": 500
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "When search occurred"
+        },
+        "resultCount": {
+          "type": "number",
+          "description": "Number of results returned"
+        }
+      },
+      "required": ["userId", "query", "timestamp"]
+    },
+    "UserPreference": {
+      "title": "UserPreference",
+      "description": "User dining preferences, dietary restrictions, and search radius",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "User identifier"
+        },
+        "dietaryRestrictions": {
+          "type": "string",
+          "description": "Comma separated dietary restrictions or preferences"
+        },
+        "pricePreference": {
+          "type": "string",
+          "description": "Preferred price range, e.g. 'all', '$', '$$', '$$$'"
+        },
+        "maxDistanceMiles": {
+          "type": "number",
+          "description": "Maximum discovery distance in miles"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Last updated timestamp"
+        }
+      },
+      "required": ["userId", "updatedAt"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "User review and rating for a restaurant venue",
+      "type": "object",
+      "properties": {
+        "placeId": {
+          "type": "string",
+          "description": "ID of the restaurant being reviewed"
+        },
+        "placeName": {
+          "type": "string",
+          "description": "Name of the restaurant"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Author user ID"
+        },
+        "userName": {
+          "type": "string",
+          "description": "Name of reviewer"
+        },
+        "userPhoto": {
+          "type": "string",
+          "description": "Avatar URL of reviewer"
+        },
+        "rating": {
+          "type": "number",
+          "description": "Star rating 1 to 5"
+        },
+        "comment": {
+          "type": "string",
+          "description": "Review text feedback",
+          "maxLength": 1000
+        },
+        "dishesOrdered": {
+          "type": "string",
+          "description": "Optional favorite dish tried"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Creation timestamp ISO string"
+        }
+      },
+      "required": ["placeId", "userId", "userName", "rating", "comment", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Individual user profile containing basic info"
+    },
+    "/users/{userId}/favorites/{favoriteId}": {
+      "schema": "Favorite",
+      "description": "Saved favorite restaurants and places for a user"
+    },
+    "/users/{userId}/search_history/{historyId}": {
+      "schema": "SearchHistory",
+      "description": "Past natural language searches by the user"
+    },
+    "/users/{userId}/preferences/{prefId}": {
+      "schema": "UserPreference",
+      "description": "Saved dietary habits and discovery preferences"
+    },
+    "/reviews/{reviewId}": {
+      "schema": "Review",
+      "description": "Public community restaurant reviews"
+    }
+  }
+}

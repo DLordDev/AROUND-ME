@@ -1,0 +1,6 @@
+{
+  "name": "AroundMe AI",
+  "description": "Discover restaurants and fast food near you with natural language, voice AI, live photos, and map exploration.",
+  "requestFramePermissions": ["geolocation", "microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
