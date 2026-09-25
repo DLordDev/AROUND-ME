@@ -25,8 +25,8 @@ export const ListView: React.FC<ListViewProps> = ({
   onVisualizeCraving,
 }) => {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-2 sm:my-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
         <div>
           <div className="flex items-center gap-2">
             <h2 className="text-lg sm:text-xl font-bold text-slate-900">All Verified Restaurants</h2>

@@ -76,8 +76,9 @@ function MainApp() {
   // Transport mode indicator preference ('both' | 'walking' | 'driving')
   const [transportMode, setTransportMode] = useState<'both' | 'walking' | 'driving'>('both');
 
-  // Selected place for details modal & visualizer
+  // Selected place for map routing and details modal
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
+  const [modalPlace, setModalPlace] = useState<Place | null>(null);
   const [visualizingPlace, setVisualizingPlace] = useState<Place | null>(null);
 
   // User Drawer State
@@ -330,7 +331,7 @@ function MainApp() {
         />
 
         {/* Main Content */}
-        <main className="flex-1 pb-20">
+        <main className="flex-1 pb-6">
           {/* Hero & Search Header */}
           <HeroSearch
             query={query}
@@ -369,7 +370,10 @@ function MainApp() {
               onSelectMode={setTransportMode}
               favorites={favoritesMap}
               onToggleFavorite={handleToggleFavorite}
-              onSelect={setSelectedPlace}
+              onSelect={(p) => {
+                setSelectedPlace(p);
+                setModalPlace(p);
+              }}
               onVisualizeCraving={setVisualizingPlace}
             />
           ) : viewMode === 'map' ? (
@@ -378,6 +382,7 @@ function MainApp() {
               userLocation={userLocation}
               selectedPlace={selectedPlace}
               onSelectPlace={setSelectedPlace}
+              onOpenDetails={setModalPlace}
             />
           ) : (
             <ListView
@@ -387,14 +392,17 @@ function MainApp() {
               onSelectMode={setTransportMode}
               favorites={favoritesMap}
               onToggleFavorite={handleToggleFavorite}
-              onSelect={setSelectedPlace}
+              onSelect={(p) => {
+                setSelectedPlace(p);
+                setModalPlace(p);
+              }}
               onVisualizeCraving={setVisualizingPlace}
             />
           )}
 
           {/* Community Reviews Showcase */}
           {recentCommunityReviews.length > 0 && (
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 pt-8 border-t border-slate-200">
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 pt-5 border-t border-slate-200">
               <div className="flex items-center justify-between mb-6 flex-wrap gap-2">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center border border-amber-200">
@@ -487,16 +495,21 @@ function MainApp() {
 
         {/* Restaurant Full Detail Modal (includes customer review form) */}
         <RestaurantModal
-          place={selectedPlace}
+          place={modalPlace}
           userLocation={userLocation}
-          onClose={() => setSelectedPlace(null)}
-          isFavorite={Boolean(selectedPlace && favoritesMap[selectedPlace.id])}
+          onClose={() => setModalPlace(null)}
+          isFavorite={Boolean(modalPlace && favoritesMap[modalPlace.id])}
           onToggleFavorite={handleToggleFavorite}
           onVisualizeCraving={(p) => {
-            setSelectedPlace(null);
+            setModalPlace(null);
             setVisualizingPlace(p);
           }}
           onAskAssistant={() => {}}
+          onViewOnMap={(p) => {
+            setModalPlace(null);
+            setSelectedPlace(p);
+            setViewMode('map');
+          }}
         />
 
         {/* Global Location Picker Modal */}

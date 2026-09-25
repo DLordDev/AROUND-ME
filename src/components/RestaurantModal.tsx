@@ -34,6 +34,7 @@ interface RestaurantModalProps {
   onToggleFavorite: (place: Place) => void;
   onVisualizeCraving: (place: Place) => void;
   onAskAssistant: (question: string) => void;
+  onViewOnMap?: (place: Place) => void;
 }
 
 export const RestaurantModal: React.FC<RestaurantModalProps> = ({
@@ -44,6 +45,7 @@ export const RestaurantModal: React.FC<RestaurantModalProps> = ({
   onToggleFavorite,
   onVisualizeCraving,
   onAskAssistant,
+  onViewOnMap,
 }) => {
   const [copied, setCopied] = useState(false);
   const [addressCopied, setAddressCopied] = useState(false);
@@ -415,6 +417,17 @@ export const RestaurantModal: React.FC<RestaurantModalProps> = ({
                 <Navigation className="w-4 h-4 text-slate-400 group-hover:text-sky-600 transition-colors" />
               </a>
             </div>
+
+            {onViewOnMap && (
+              <button
+                type="button"
+                onClick={() => onViewOnMap(place)}
+                className="w-full mt-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <Navigation className="w-3.5 h-3.5" />
+                <span>Draw Walking & Driving Path on Interactive Map</span>
+              </button>
+            )}
           </div>
 
           {/* Highlights & Features */}

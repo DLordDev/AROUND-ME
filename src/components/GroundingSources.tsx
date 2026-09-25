@@ -78,7 +78,7 @@ export const GroundingSources: React.FC<GroundingSourcesProps> = ({
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-2 sm:my-3">
       <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-2 text-xs font-bold text-slate-800">

@@ -38,7 +38,7 @@ export const RestaurantCarousel: React.FC<RestaurantCarouselProps> = ({
 
   if (places.length === 0) {
     return (
-      <div className="max-w-4xl mx-auto my-12 p-8 text-center bg-white rounded-2xl border border-slate-200 shadow-sm">
+      <div className="max-w-4xl mx-auto my-4 p-6 text-center bg-white rounded-2xl border border-slate-200 shadow-xs">
         <Sparkles className="w-8 h-8 text-amber-500 mx-auto mb-2 animate-bounce" />
         <h3 className="text-base font-bold text-slate-900">No restaurants found matching your criteria</h3>
         <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
@@ -49,7 +49,7 @@ export const RestaurantCarousel: React.FC<RestaurantCarouselProps> = ({
   }
 
   return (
-    <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-6">
+    <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-2 sm:my-3">
       {/* Section Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
         <div>

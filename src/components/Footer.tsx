@@ -66,14 +66,14 @@ export const Footer: React.FC<FooterProps> = ({
   };
 
   return (
-    <footer className="mt-20 border-t border-slate-200/80 bg-gradient-to-b from-slate-900 via-slate-950 to-black text-slate-300 relative overflow-hidden">
+    <footer className="mt-6 border-t border-slate-200/80 bg-gradient-to-b from-slate-900 via-slate-950 to-black text-slate-300 relative overflow-hidden">
       {/* Decorative ambient background glows */}
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none translate-y-1/2" />
 
       {/* Main Catchphrase Hero Banner */}
       <div className="border-b border-white/10 bg-white/[0.02]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
             <div className="max-w-2xl space-y-3">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold tracking-wide">
@@ -111,7 +111,7 @@ export const Footer: React.FC<FooterProps> = ({
           </div>
 
           {/* Popular instant craving search pills */}
-          <div className="mt-8 pt-6 border-t border-white/5">
+          <div className="mt-5 pt-4 border-t border-white/5">
             <div className="flex items-center gap-2 mb-3">
               <Utensils className="w-3.5 h-3.5 text-amber-400" />
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
@@ -140,7 +140,7 @@ export const Footer: React.FC<FooterProps> = ({
       </div>
 
       {/* Structured Footer Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Column 1: Brand Info */}
           <div className="space-y-4">

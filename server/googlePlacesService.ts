@@ -1,7 +1,8 @@
 export const GOOGLE_MAPS_API_KEY =
   process.env.GOOGLE_MAPS_API_KEY ||
   process.env.VITE_GOOGLE_MAPS_API_KEY ||
-  'AIzaSyA_PDjN-yXnfXIEEbKxWI9hSsjwZalEhWo';
+  process.env.GEMINI_API_KEY ||
+  '';
 
 export interface GooglePlaceResult {
   id: string;
@@ -71,6 +72,9 @@ export async function searchGooglePlaces(
   currencySymbol: string = '₦'
 ): Promise<GooglePlaceResult[]> {
   try {
+    if (!GOOGLE_MAPS_API_KEY) {
+      return [];
+    }
     const textQuery = query.toLowerCase().includes(city.toLowerCase())
       ? query
       : `${query} in ${city}`;

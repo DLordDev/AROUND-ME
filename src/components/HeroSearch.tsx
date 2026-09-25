@@ -138,9 +138,9 @@ export const HeroSearch: React.FC<HeroSearchProps> = ({
   };
 
   return (
-    <section className="relative pt-6 sm:pt-8 pb-4 px-3 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center">
+    <section className="relative pt-4 sm:pt-6 pb-2 px-3 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center">
       {/* Main Headline */}
-      <div className="space-y-2.5 mb-5">
+      <div className="space-y-1.5 mb-3.5">
         <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-slate-900 leading-tight">
           find what you're craving, <br />
           <span className="bg-gradient-to-r from-amber-600 via-orange-500 to-emerald-600 bg-clip-text text-transparent">
@@ -153,7 +153,7 @@ export const HeroSearch: React.FC<HeroSearchProps> = ({
       </div>
 
       {/* Quick Location Switcher Bar (Benin City <-> Lagos & GPS) */}
-      <div className="flex items-center justify-center gap-1.5 sm:gap-2 mb-4 flex-wrap text-xs">
+      <div className="flex items-center justify-center gap-1.5 sm:gap-2 mb-3 flex-wrap text-xs">
         <span className="text-slate-500 font-semibold flex items-center gap-1 text-[11px]">
           <MapPin className="w-3.5 h-3.5 text-amber-600 shrink-0" />
           Location:
@@ -262,7 +262,7 @@ export const HeroSearch: React.FC<HeroSearchProps> = ({
       </form>
 
       {/* Suggested Discovery Chips */}
-      <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap max-w-3xl mx-auto mb-5">
+      <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap max-w-3xl mx-auto mb-3">
         <span className="text-[11px] sm:text-xs text-slate-400 font-semibold flex items-center gap-1">
           <Store className="w-3.5 h-3.5 text-amber-500" />
           Suggestions:
