@@ -45,7 +45,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onToggleVoice,
   onSearchRestaurant,
 }) => {
-  const { currentUser, signInWithGoogle, logout } = useAuth();
+  const { currentUser, setAuthModalOpen, setProfileModalOpen, logout } = useAuth();
   const [hamburgerOpen, setHamburgerOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [quickRestaurantInput, setQuickRestaurantInput] = useState('');
@@ -184,6 +184,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <p className="text-[11px] text-slate-500 truncate">{currentUser.email}</p>
                     </div>
                     <button
+                      onClick={() => setProfileModalOpen(true)}
+                      className="w-full text-left px-3.5 py-2 hover:bg-amber-50 text-amber-900 flex items-center gap-2.5 font-bold"
+                    >
+                      <UserIcon className="w-4 h-4 text-amber-600" />
+                      <span>Edit Profile & Payouts</span>
+                    </button>
+                    <button
                       onClick={() => onOpenUserDrawer('favorites')}
                       className="w-full text-left px-3.5 py-2 hover:bg-slate-50 flex items-center gap-2.5 font-medium"
                     >
@@ -217,12 +224,12 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
             ) : (
               <button
-                onClick={signInWithGoogle}
+                onClick={() => setAuthModalOpen(true)}
                 type="button"
                 className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white transition-all shadow-xs cursor-pointer"
               >
                 <UserIcon className="w-3.5 h-3.5 text-amber-400" />
-                <span>Sign In with Google</span>
+                <span>Sign In / Profile</span>
               </button>
             )}
           </div>
@@ -296,27 +303,39 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <p className="text-[11px] text-slate-500 truncate max-w-[170px]">{currentUser.email}</p>
                     </div>
                   </div>
-                  <button
-                    onClick={() => {
-                      logout();
-                      setHamburgerOpen(false);
-                    }}
-                    className="p-2 text-slate-400 hover:text-rose-600 hover:bg-white rounded-lg transition-colors"
-                    title="Log Out"
-                  >
-                    <LogOut className="w-4 h-4" />
-                  </button>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => {
+                        setProfileModalOpen(true);
+                        setHamburgerOpen(false);
+                      }}
+                      className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                      title="Edit Profile & Payouts"
+                    >
+                      <UserIcon className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        logout();
+                        setHamburgerOpen(false);
+                      }}
+                      className="p-2 text-slate-400 hover:text-rose-600 hover:bg-white rounded-lg transition-colors"
+                      title="Log Out"
+                    >
+                      <LogOut className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <button
                   onClick={() => {
-                    signInWithGoogle();
+                    setAuthModalOpen(true);
                     setHamburgerOpen(false);
                   }}
-                  className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-sm transition-all"
+                  className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
                 >
                   <UserIcon className="w-4 h-4 text-amber-400" />
-                  <span>Sign In with Google</span>
+                  <span>Sign In / Profile</span>
                 </button>
               )}
 

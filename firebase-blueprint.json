@@ -21,6 +21,28 @@
           "type": "string",
           "description": "User avatar image URL"
         },
+        "phoneNumber": {
+          "type": "string",
+          "description": "User phone number for notifications and contact"
+        },
+        "city": {
+          "type": "string",
+          "description": "User primary city or delivery location"
+        },
+        "bio": {
+          "type": "string",
+          "description": "User culinary bio or tagline"
+        },
+        "payoutDetails": {
+          "type": "object",
+          "description": "User payout and banking details for bill splitting or rewards",
+          "properties": {
+            "bankName": { "type": "string" },
+            "accountNumber": { "type": "string" },
+            "accountName": { "type": "string" },
+            "currency": { "type": "string" }
+          }
+        },
         "createdAt": {
           "type": "string",
           "description": "Account creation timestamp"

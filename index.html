@@ -1,22 +1,311 @@
-<!doctype html>
-<html lang="en" class="overflow-x-hidden">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>AroundMe AI - Restaurant & Food Discovery</title>
-    <meta name="description" content="Discover restaurants and fast food near you with natural language, voice AI, live photos, and map exploration." />
-    <meta property="og:title" content="AroundMe AI - Restaurant & Food Discovery" />
-    <meta property="og:description" content="Discover restaurants and fast food near you with natural language, voice AI, live photos, and map exploration." />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-  </head>
-  <body class="font-['Plus_Jakarta_Sans',sans-serif] bg-white text-slate-900 antialiased selection:bg-amber-500 selection:text-white overflow-x-hidden min-h-screen">
-    <div id="root" class="overflow-x-hidden min-h-screen bg-white"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>AroundMe AI - Verified Restaurant & Place Discovery</title>
+  <meta name="description" content="Discover restaurants and fast food near you with verified Google Places data, authentic live photos, and map exploration." />
+  <meta property="og:title" content="AroundMe AI - Verified Restaurant & Place Discovery" />
+  <meta property="og:description" content="Discover restaurants and fast food near you with verified Google Places data, authentic live photos, and map exploration." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
 
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+  <!-- Custom Pure CSS Stylesheet with Mobile Optimizations -->
+  <link rel="stylesheet" href="/css/style.css" />
+
+  <!-- Google Identity Services (GIS) Library -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <!-- Leaflet Map JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       Header & Navbar (Faithfully matching Navbar.tsx branding)
+       ========================================================================== -->
+  <header class="site-header">
+    <div class="navbar-container">
+      <!-- Brand & Dynamic Compass Logo -->
+      <a href="/" class="brand-wrapper">
+        <div class="compass-logo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-text-row">
+            <span class="brand-name">AroundMe</span>
+            <span class="brand-badge">AI</span>
+          </div>
+          <span class="brand-subtitle">Verified Place Discovery</span>
+        </div>
+      </a>
+
+      <!-- Discovery Location Selector Pill -->
+      <button id="citySelectorBtn" class="nav-location-pill" title="Click to switch city or location">
+        <div class="status-ping-dot">
+          <span></span>
+          <span></span>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+        <span id="currentCityText">Benin City</span>
+        <span style="font-size: 10px; color: #94a3b8;">▼</span>
+      </button>
+
+      <!-- Navbar Actions (Bookmarks, Google Sign-In / Profile) -->
+      <div class="navbar-actions">
+        <!-- Favorites Counter Pill -->
+        <button id="navFavoritesBtn" class="btn-nav-icon" title="Saved Places">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          <span id="favoritesCountBadge" class="badge-counter">0</span>
+        </button>
+
+        <!-- Google Identity Services Sign-In Button Container -->
+        <div id="googleSignInBtn"></div>
+
+        <!-- Authenticated User Profile Container -->
+        <div id="userProfileContainer" class="user-profile-badge">
+          <img id="userAvatarImg" src="" alt="User Avatar" class="user-avatar" />
+          <span id="userNameDisplay" class="user-name">User</span>
+          <button id="signOutBtn" class="btn-signout" title="Sign out">Sign Out</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       Hero & Search Section (Faithfully matching HeroSearch.tsx)
+       ========================================================================== -->
+  <section class="hero-section">
+    <div class="hero-container">
+      <div class="hero-pill-badge">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        <span>Google Places Real Data & Live Photos</span>
+      </div>
+
+      <h1 class="hero-title">
+        Find What You Crave, <span>Exactly Where You Are</span>
+      </h1>
+      <p class="hero-subtitle">
+        Search by place name, mood, or food. View exact Google coordinates, verified ratings, and authentic photography for spots like <strong>Kada Plaza</strong> and <strong>Chicken Republic</strong>.
+      </p>
+
+      <!-- Search Input Form -->
+      <form id="searchForm" class="search-form">
+        <svg class="search-icon-left" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input 
+          type="text" 
+          id="searchInput" 
+          class="search-input" 
+          placeholder="e.g., best jollof rice in Benin, Kada Plaza food court, late night suya..." 
+          autocomplete="off"
+        />
+        <button type="submit" class="btn-search-submit">
+          <span>Discover</span>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+      </form>
+
+      <!-- Quick Suggestion Chips -->
+      <div class="quick-chips-wrapper">
+        <button type="button" class="quick-chip" data-query="Kada Plaza Benin City">🍿 Kada Plaza & Entertainment</button>
+        <button type="button" class="quick-chip" data-query="Chicken Republic Benin City">🍗 Chicken Republic & Fast Food</button>
+        <button type="button" class="quick-chip" data-query="Kilimanjaro Restaurant Benin City">🍲 Kilimanjaro & Local Dishes</button>
+        <button type="button" class="quick-chip" data-query="Cold Stone Creamery Benin City">🍦 Ice Cream & Desserts</button>
+        <button type="button" class="quick-chip" data-query="Top rated restaurants Benin City">⭐ 4.5+ Top Rated</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       Filter & Categories Bar
+       ========================================================================== -->
+  <div class="controls-bar">
+    <div class="filter-categories">
+      <button class="filter-btn active" data-filter="all">All Places</button>
+      <button class="filter-btn" data-filter="food">Food & Dining</button>
+      <button class="filter-btn" data-filter="shopping">Malls & Plazas</button>
+      <button class="filter-btn" data-filter="open">Open Now</button>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       Main Content (Places Grid & Leaflet Map)
+       ========================================================================== -->
+  <main class="main-content">
+    <div class="results-header-row">
+      <h2 id="resultsTitle" class="results-count-title">Searching places...</h2>
+    </div>
+
+    <!-- Responsive Cards Grid with zero layout shift -->
+    <div id="placesGrid" class="places-grid">
+      <!-- Dynamic place cards rendered via /js/app.js -->
+    </div>
+
+    <!-- Interactive Location Map -->
+    <section class="map-container-wrapper">
+      <div class="map-header">
+        <div class="map-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
+          <span>Live Interactive Map</span>
+        </div>
+        <span style="font-size: 0.8rem; color: #64748b;">Pins match exact Google coordinates</span>
+      </div>
+      <div id="map"></div>
+    </section>
+  </main>
+
+  <!-- ==========================================================================
+       Place Details & Multi-Photo Gallery Modal (Matches RestaurantModal.tsx)
+       ========================================================================== -->
+  <div id="placeModal" class="modal-overlay">
+    <div class="modal-card">
+      <button id="modalCloseBtn" class="modal-close-btn" title="Close modal">&times;</button>
+
+      <!-- Interactive Multi-Photo Carousel (Official Google Photos) -->
+      <div class="modal-gallery-hero">
+        <img id="modalHeroImg" src="" alt="Place photo" class="modal-gallery-img" />
+        <button id="galleryPrevBtn" class="carousel-nav-btn carousel-nav-prev" title="Previous photo">&#10094;</button>
+        <button id="galleryNextBtn" class="carousel-nav-btn carousel-nav-next" title="Next photo">&#10095;</button>
+      </div>
+
+      <!-- Real Google Photos Thumbnail Strip -->
+      <div id="modalGalleryStrip" class="modal-gallery-strip"></div>
+
+      <!-- Modal Body Content -->
+      <div class="modal-body">
+        <div id="modalCuisine" style="font-size: 0.75rem; font-weight: 800; color: #d97706; text-transform: uppercase;">Place & Dining</div>
+        <h2 id="modalTitle" class="modal-title">Place Name</h2>
+
+        <div class="modal-details-grid">
+          <div class="modal-detail-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <div style="flex-grow: 1; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+              <span id="modalAddress">Address text</span>
+              <button id="copyAddressBtn" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px 6px; font-size: 10px; font-weight: bold; cursor: pointer;">Copy</button>
+            </div>
+          </div>
+
+          <div class="modal-detail-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            <span id="modalRating">Rating and reviews</span>
+          </div>
+
+          <div class="modal-detail-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span id="modalHours">Hours</span>
+          </div>
+
+          <div class="modal-detail-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            <a id="modalPhoneLink" href="#" style="color: inherit; text-decoration: underline;"><span id="modalPhone">Phone</span></a>
+          </div>
+        </div>
+
+        <p id="modalSummary" style="font-size: 0.85rem; color: #475569; line-height: 1.5; background: #f8fafc; padding: 0.85rem; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 1.25rem;">
+          Place summary details.
+        </p>
+
+        <div style="display: flex; gap: 0.65rem;">
+          <a id="modalMapsLink" href="#" target="_blank" rel="noopener noreferrer" class="btn-card-action btn-primary-action" style="flex: 1; padding: 0.75rem;">
+            Open in Google Maps ↗
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       Moveable / Draggable AI Assistant Chat Box (Matches FloatingAssistant.tsx)
+       ========================================================================== -->
+  <aside id="draggableAssistant" class="draggable-assistant" aria-label="AroundMe Assistant">
+    <div id="assistantHeader" class="assistant-header" title="Click and drag to move anywhere on screen">
+      <div class="assistant-header-left">
+        <div class="assistant-avatar">✨</div>
+        <div>
+          <div class="assistant-header-title">AroundMe Assistant</div>
+          <div id="assistantSubtitle" class="assistant-header-subtitle">Moveable Guide • Click & Drag</div>
+        </div>
+      </div>
+      <div>
+        <button id="assistantMinimizeBtn" class="btn-assistant-header" title="Minimize or Expand">−</button>
+      </div>
+    </div>
+
+    <div id="assistantBody" class="assistant-body">
+      <div id="assistantMessages" class="assistant-messages">
+        <div class="message-bubble message-assistant">
+          Hi! 👋 I'm your local guide. Looking for great places or details on spots like <strong>Kada Plaza</strong> and <strong>Chicken Republic</strong>? Ask me anything!
+        </div>
+      </div>
+
+      <!-- Quick Suggestion Chips -->
+      <div id="assistantSuggestions" class="assistant-suggestions">
+        <button type="button" class="assistant-suggestion-chip">Tell me about Kada Plaza</button>
+        <button type="button" class="assistant-suggestion-chip">What is open right now?</button>
+        <button type="button" class="assistant-suggestion-chip">Top rated food spots</button>
+      </div>
+
+      <!-- Input Form -->
+      <form id="assistantForm" class="assistant-input-form">
+        <input 
+          type="text" 
+          id="assistantInput" 
+          class="assistant-input" 
+          placeholder="Ask about places, food, hours..." 
+          autocomplete="off"
+        />
+        <button type="submit" class="btn-assistant-send" title="Send message">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        </button>
+      </form>
+    </div>
+  </aside>
+
+  <!-- ==========================================================================
+       Toast Notification
+       ========================================================================== -->
+  <div id="toastNotification" class="toast">Notification</div>
+
+  <!-- ==========================================================================
+       Footer (Matching Footer.tsx)
+       ========================================================================== -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-top">
+        <div>
+          <h3 style="color: #fff; font-size: 1.15rem; font-weight: 800; margin-bottom: 0.25rem;">AroundMe Places</h3>
+          <p style="font-size: 0.85rem;">Authentic location discovery powered by Google Places API.</p>
+        </div>
+
+        <div>
+          <a href="https://wa.me/2348098114106?text=Hello%20AroundMe%20Places!%20I%20have%20feedback%20or%20a%20question." target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86.174.086.275.072.376-.043.101-.116.433-.506.549-.68.116-.173.231-.144.39-.086s1.011.477 1.184.564.289.13.332.202c.043.073.043.419-.101.824z"/></svg>
+            <span>WhatsApp: +234 809 811 4106</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>&copy; 2026 AroundMe Places. All rights reserved.</span>
+        <span>Google Places API &bull; Google Identity Services</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Pure Vanilla JavaScript ES6+ Modules -->
+  <script type="module" src="/js/config.js"></script>
+  <script type="module" src="/js/auth.js"></script>
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>

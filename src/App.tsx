@@ -17,6 +17,9 @@ import { UserDrawer } from './components/UserDrawer';
 import { LocationPickerModal } from './components/LocationPickerModal';
 import { GroundingSources } from './components/GroundingSources';
 import { Footer } from './components/Footer';
+import { AuthModal } from './components/AuthModal';
+import { ProfileModal } from './components/ProfileModal';
+import { getVerifiedVenuePhotos } from './data/verifiedRestaurantPhotos';
 import { MessageSquare, Star, Sparkles, UtensilsCrossed } from 'lucide-react';
 import {
   Place,
@@ -190,14 +193,27 @@ function MainApp() {
         if (!response.ok) throw new Error('Search failed');
         const data = await response.json();
 
-        setPlaces(data.places || []);
+        const rawPlaces: Place[] = data.places || [];
+        const enrichedPlaces = rawPlaces.map((p) => {
+          const photoSet = getVerifiedVenuePhotos(p.name, p.cuisine, userLocation.city);
+          const photos = (p.photos && p.photos.length >= 6 && !p.photos[0].includes('photo-1555396273'))
+            ? p.photos
+            : photoSet.photos;
+          return {
+            ...p,
+            photos,
+            photoUrl: photos[0] || photoSet.primary,
+          };
+        });
+
+        setPlaces(enrichedPlaces);
         setSummary(data.summary || '');
         setGroundingLinks(data.groundingLinks || []);
         setSearchSource(data.searchSource || 'google_maps');
 
         // Record search in Firestore if authenticated and user manually typed
-        if (currentUser && data.places?.length > 0 && query.trim()) {
-          recordSearchHistory(currentUser.uid, q, data.places.length);
+        if (currentUser && enrichedPlaces.length > 0 && query.trim()) {
+          recordSearchHistory(currentUser.uid, q, enrichedPlaces.length);
         }
 
         // Voice read summary ONLY when explicitly enabled AND NOT on automatic initial background load
@@ -483,7 +499,7 @@ function MainApp() {
           onOpenLocationModal={() => setLocationModalOpen(true)}
         />
 
-        {/* Floating AI Concierge Assistant */}
+        {/* Floating AI Concierge Assistant (Moveable & Draggable) */}
         <FloatingAssistant
           currentPlaces={filteredPlaces}
           currentQuery={query}
@@ -491,6 +507,10 @@ function MainApp() {
           onFilterAction={handleAssistantAction}
           voiceEnabled={voiceEnabled}
           setVoiceEnabled={setVoiceEnabled}
+          onSelectPlace={(p) => {
+            setSelectedPlace(p);
+            setModalPlace(p);
+          }}
         />
 
         {/* Restaurant Full Detail Modal (includes customer review form) */}
@@ -542,6 +562,12 @@ function MainApp() {
             executeSearch(q);
           }}
         />
+
+        {/* Global Auth Modal (Google & Profile Login) */}
+        <AuthModal />
+
+        {/* User Profile & Payout Management Modal */}
+        <ProfileModal />
       </div>
     </div>
   );

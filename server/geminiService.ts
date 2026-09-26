@@ -1,5 +1,6 @@
 import { GoogleGenAI, ThinkingLevel } from '@google/genai';
 import { searchGooglePlaces } from './googlePlacesService.ts';
+import { getVerifiedVenuePhotos } from './verifiedRestaurantPhotos.ts';
 
 // Initialize Gemini SDK with process.env.GEMINI_API_KEY
 const ai = new GoogleGenAI();
@@ -278,11 +279,8 @@ Output ONLY the JSON array starting with [ and ending with ]. No markdown backti
         const placeLat = userLat + (item.latOffset || (Math.random() - 0.5) * 0.02);
         const placeLng = userLng + (item.lngOffset || (Math.random() - 0.5) * 0.02);
         
-        // Build 4 rich photos for every restaurant
-        const p1 = CURATED_FOOD_PHOTOS[idx % CURATED_FOOD_PHOTOS.length];
-        const p2 = CURATED_FOOD_PHOTOS[(idx + 1) % CURATED_FOOD_PHOTOS.length];
-        const p3 = CURATED_FOOD_PHOTOS[(idx + 2) % CURATED_FOOD_PHOTOS.length];
-        const p4 = CURATED_FOOD_PHOTOS[(idx + 3) % CURATED_FOOD_PHOTOS.length];
+        // Build authentic verified photos (8-10 real photos per venue)
+        const photoSet = getVerifiedVenuePhotos(item.name || '', item.cuisine || '', city);
         const cleanHandle = (item.name || '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
 
         const matchedGrounding = groundingLinks.find((g) =>
@@ -304,8 +302,8 @@ Output ONLY the JSON array starting with [ and ending with ]. No markdown backti
           openNow: item.openNow !== undefined ? Boolean(item.openNow) : true,
           hoursText: item.hoursText || 'Open · Closes 10:30 PM',
           phone: item.phone || '+234 803 123 4567',
-          photos: [p1, p2, p3, p4],
-          photoUrl: p1,
+          photos: photoSet.photos,
+          photoUrl: photoSet.primary,
           features: Array.isArray(item.features) ? item.features : ['Dine-in', 'Takeout', 'Multiple Photos'],
           highlights: Array.isArray(item.highlights) ? item.highlights : ['Popular Choice'],
           lat: placeLat,
@@ -331,6 +329,13 @@ Output ONLY the JSON array starting with [ and ending with ]. No markdown backti
     const isLagos = city.toLowerCase().includes('lagos') || (userLat > 6.3 && userLat < 6.7 && userLng > 3.2 && userLng < 3.7);
 
     if (isBenin) {
+      const kadaSet = getVerifiedVenuePhotos('Kada Plaza', 'Chinese & Continental', city);
+      const matIceSet = getVerifiedVenuePhotos('Mat-Ice', 'Bakery & Ice Cream', city);
+      const kiliSet = getVerifiedVenuePhotos('Kilimanjaro', 'Nigerian QSR', city);
+      const chickenRepSet = getVerifiedVenuePhotos('Chicken Republic', 'Fast Food', city);
+      const secretGardenSet = getVerifiedVenuePhotos('The Secret Garden', 'Continental & Lounge', city);
+      const suyaSet = getVerifiedVenuePhotos('Suya Grill', 'Suya', city);
+
       places = [
         {
           id: 'place_kada_plaza',
@@ -346,13 +351,8 @@ Output ONLY the JSON array starting with [ and ending with ]. No markdown backti
           openNow: true,
           hoursText: 'Open · Closes 11:30 PM',
           phone: '+234 803 400 9988',
-          photos: [
-            CURATED_FOOD_PHOTOS[0],
-            CURATED_FOOD_PHOTOS[1],
-            CURATED_FOOD_PHOTOS[2],
-            CURATED_FOOD_PHOTOS[3],
-          ],
-          photoUrl: CURATED_FOOD_PHOTOS[0],
+          photos: kadaSet.photos,
+          photoUrl: kadaSet.primary,
           features: ['Dine-in', 'Cinema Bites', 'Cocktail Lounge', 'Air Conditioned'],
           highlights: ['Sizzling Beef in Black Bean Sauce', 'Special Fried Rice', 'Crispy Spring Rolls'],
           lat: 6.3150,
@@ -377,13 +377,8 @@ Output ONLY the JSON array starting with [ and ending with ]. No markdown backti
           openNow: true,
           hoursText: 'Open · Closes 10:30 PM',
           phone: '+234 805 111 2233',
-          photos: [
-            CURATED_FOOD_PHOTOS[8],
-            CURATED_FOOD_PHOTOS[9],
-            CURATED_FOOD_PHOTOS[10],
-            CURATED_FOOD_PHOTOS[4],
-          ],
-          photoUrl: CURATED_FOOD_PHOTOS[8],
+          photos: matIceSet.photos,
+          photoUrl: matIceSet.primary,
           features: ['Ice Cream Swirls', 'Fresh Pastries', 'Dine-in', 'Takeout'],
           highlights: ['Artisan Gelato & Soft Serve', 'Warm Meat Pies', 'Fried Rice & Peppered Chicken'],
           lat: 6.3090,
@@ -408,13 +403,8 @@ Output ONLY the JSON array starting with [ and ending with ]. No markdown backti
           openNow: true,
           hoursText: 'Open · Closes 10:00 PM',
           phone: '+234 810 555 8890',
-          photos: [
-            CURATED_FOOD_PHOTOS[2],
-            CURATED_FOOD_PHOTOS[3],
-            CURATED_FOOD_PHOTOS[0],
-            CURATED_FOOD_PHOTOS[5],
-          ],
-          photoUrl: CURATED_FOOD_PHOTOS[2],
+          photos: kiliSet.photos,
+          photoUrl: kiliSet.primary,
           features: ['Takeout', 'Dine-in', 'Speedy Service', 'Family Friendly'],
           highlights: ['Smoky Party Jollof', 'Peppered Gizzard & Plantain', 'Crispy Golden Chicken'],
           lat: 6.3210,
@@ -439,13 +429,8 @@ Output ONLY the JSON array starting with [ and ending with ]. No markdown backti
           openNow: true,
           hoursText: 'Open · Closes 10:30 PM',
           phone: '+234 809 333 4455',
-          photos: [
-            CURATED_FOOD_PHOTOS[4],
-            CURATED_FOOD_PHOTOS[5],
-            CURATED_FOOD_PHOTOS[6],
-            CURATED_FOOD_PHOTOS[1],
-          ],
-          photoUrl: CURATED_FOOD_PHOTOS[4],
+          photos: chickenRepSet.photos,
+          photoUrl: chickenRepSet.primary,
           features: ['Drive-thru', 'Takeout', 'Combo Meals', 'Air Conditioned'],
           highlights: ['Soulmate Crispy Chicken', 'Spicy Rice Bowl', 'Chief Burger & Chips'],
           lat: 6.3190,
@@ -470,13 +455,8 @@ Output ONLY the JSON array starting with [ and ending with ]. No markdown backti
           openNow: true,
           hoursText: 'Open · Closes 1:00 AM',
           phone: '+234 813 444 9900',
-          photos: [
-            CURATED_FOOD_PHOTOS[10],
-            CURATED_FOOD_PHOTOS[11],
-            CURATED_FOOD_PHOTOS[7],
-            CURATED_FOOD_PHOTOS[9],
-          ],
-          photoUrl: CURATED_FOOD_PHOTOS[10],
+          photos: secretGardenSet.photos,
+          photoUrl: secretGardenSet.primary,
           features: ['Garden Ambience', 'Live Music', 'Craft Cocktails', 'VIP Lounge'],
           highlights: ['Grilled Jumbo Prawns', 'Goat Meat Pepper Soup', 'Steak with Mashed Potatoes'],
           lat: 6.3260,
@@ -501,13 +481,8 @@ Output ONLY the JSON array starting with [ and ending with ]. No markdown backti
           openNow: true,
           hoursText: 'Open · Closes 11:00 PM',
           phone: '+234 802 777 6611',
-          photos: [
-            CURATED_FOOD_PHOTOS[6],
-            CURATED_FOOD_PHOTOS[7],
-            CURATED_FOOD_PHOTOS[3],
-            CURATED_FOOD_PHOTOS[2],
-          ],
-          photoUrl: CURATED_FOOD_PHOTOS[6],
+          photos: suyaSet.photos,
+          photoUrl: suyaSet.primary,
           features: ['Outdoor Seating', 'Takeout', 'Late Night Bites'],
           highlights: ['Charcoal Roasted Catfish', 'Double Beef Shawarma', 'Fried Plantain & Sauce'],
           lat: 6.3120,
@@ -745,6 +720,16 @@ Output ONLY the JSON array starting with [ and ending with ]. No markdown backti
     }
   }
 
+  // Final verification: ensure every restaurant has authentic, original photos (8-10 photos per venue)
+  const finalPlaces = places.map((p) => {
+    const photoSet = getVerifiedVenuePhotos(p.name, p.cuisine, city);
+    return {
+      ...p,
+      photos: photoSet.photos,
+      photoUrl: photoSet.primary,
+    };
+  });
+
   // Generate suggested follow-up chips
   const suggestedFollowUps = [
     'Find somewhere cheaper',
@@ -756,7 +741,7 @@ Output ONLY the JSON array starting with [ and ending with ]. No markdown backti
 
   return {
     summary,
-    places,
+    places: finalPlaces,
     groundingLinks,
     suggestedFollowUps,
     searchSource: mode === 'thinking' ? 'deep_thinking' : mode === 'search' ? 'google_search' : 'google_maps',
@@ -787,28 +772,43 @@ export async function chatAssistant(
     };
   });
 
-  const prompt = `You are AroundMe AI's instant dining concierge.
-The user is currently browsing these restaurants for "${currentQuery}":
+  const cityName = (location as any)?.city || 'Benin City';
+
+  const prompt = `You are AroundMe AI's smart restaurant and dining concierge, powered by Gemini.
+You assist users looking for restaurants, fast food, local delicacies, and dining spots in and around ${cityName}.
+
+Current user query: "${currentQuery || 'Dining spots'}"
+Current city/location: ${cityName}
+Currently visible places on their screen:
 ${JSON.stringify(simplifiedPlaces)}
 
 User message: "${message}"
 
-Answer the user directly, concisely (2-3 sentences max), friendly and knowledgeable.
-If the user asks:
-- "find somewhere cheaper" or similar: identify which places are $ or cheaper and recommend them.
-- "show me closer" or similar: pick the closest place by distance.
-- "walkable" or "walking distance" or "places I can walk to": pick spots with walkMinutes <= 15 and return action "filter_walkable".
-- "driving" or "quick drive": pick spots with driveMinutes <= 10 and return action "filter_quick_drive".
-- "open now": pick the open spots.
-- asking for dietary/dishes: identify the best matching restaurant from the current list.
-
-Output in JSON format with keys:
+BEHAVIOR & TONE GUIDELINES:
+1. GREETINGS & CASUAL INTERACTION:
+   - If the user says "hi", "hello", "hey", "good morning", "how are you", etc.:
+     Greet them warmly and enthusiastically as their AroundMe AI dining concierge for ${cityName}. Tell them you can recommend verified spots (e.g. Chicken Republic for crispy chicken & jollof, Kada Plaza for Chinese wok & entertainment, Mat-Ice for ice cream & fresh pastries, or local delicacies like pounded yam & pepper soup), filter by walking/driving times, or answer questions about any restaurant.
+2. RECOMMENDATIONS & SUGGESTIONS:
+   - If user asks "what should I eat?", "recommend a place", "where can I get good jollof?", "best dinner spot":
+     Give specific, mouthwatering recommendations from the visible list or iconic verified spots in ${cityName}. Mention signature dishes, price level, and whether they can walk or drive there.
+3. SPECIFIC FILTERS & COMMANDS:
+   - "find somewhere cheaper" / "budget": highlight $ places and set action: "filter_cheaper".
+   - "closer" / "nearest": recommend the closest place and set action: "filter_closer".
+   - "walkable" / "can walk to": pick spots with walkMinutes <= 15 and set action: "filter_walkable".
+   - "driving" / "quick drive": pick spots with quick drive access and set action: "filter_quick_drive".
+   - "open now": recommend open spots and set action: "filter_open_now".
+4. STRICT PURPOSE BOUNDARY (ANTI-ABSTRACT):
+   - Never talk abstract or answer questions unrelated to food, dining, restaurants, cuisines, cafes, travel times, or locations.
+   - If the user asks something completely outside of food & dining (e.g., coding, mathematics, world history, politics):
+     Politely guide them back: "I am your dedicated AroundMe food & dining concierge for ${cityName}! I specialize exclusively in finding you delicious spots to eat, verified menus, signature dishes, and travel times. What kind of meal or treat can I recommend for you right now?"
+5. LENGTH & FORMAT:
+   - Keep answers clear, natural, helpful, and scannable (2 to 4 sentences).
+   - Return valid JSON ONLY with these keys:
 {
-  "text": "Your helpful conversational reply mentioning travel times if relevant",
+  "text": "Your helpful, engaging response",
   "action": null or "filter_cheaper" or "filter_closer" or "filter_open_now" or "filter_walkable" or "filter_quick_drive",
-  "recommendedPlaceIds": ["place_id"]
-}
-Output ONLY the JSON object.`;
+  "recommendedPlaceIds": ["place_id1"]
+}`;
 
   try {
     const res = await ai.models.generateContent({

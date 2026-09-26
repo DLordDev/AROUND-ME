@@ -14,6 +14,7 @@ import {
   Compass,
   Building2,
   Navigation,
+  ExternalLink,
 } from 'lucide-react';
 import { DynamicCompassLogo } from './DynamicCompassLogo';
 import { UserLocation } from '../types';
@@ -52,9 +53,37 @@ export const Footer: React.FC<FooterProps> = ({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const WHATSAPP_NUMBER = '2348098114106';
+
+  const openWhatsAppUrl = (text: string) => {
+    const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+    try {
+      const w = window.open(waUrl, '_blank');
+      if (!w || w.closed || typeof w.closed === 'undefined') {
+        window.location.href = waUrl;
+      }
+    } catch {
+      window.location.href = waUrl;
+    }
+  };
+
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!contactMessage.trim()) return;
+
+    const formattedText = `Hello AroundMe AI!
+
+*Contact Submission from AroundMe AI:*
+• *Subject:* ${contactSubject}
+• *Name:* ${contactName || 'Guest User'}
+• *Email:* ${contactEmail || 'N/A'}
+• *Location:* ${currentLocation?.city || 'Nigeria'}
+
+*Message:*
+${contactMessage}`;
+
+    openWhatsAppUrl(formattedText);
+
     setIsSubmitted(true);
     setTimeout(() => {
       setIsSubmitted(false);
@@ -62,7 +91,7 @@ export const Footer: React.FC<FooterProps> = ({
       setContactName('');
       setContactEmail('');
       setContactMessage('');
-    }, 2200);
+    }, 2000);
   };
 
   return (
@@ -346,16 +375,43 @@ export const Footer: React.FC<FooterProps> = ({
               </div>
             ) : (
               <div>
-                <div className="flex items-center gap-3 mb-6">
+                <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-400 flex items-center justify-center">
                     <Mail className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white">Contact Me</h3>
+                    <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                      <span>Contact Me</span>
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold">
+                        WhatsApp Active
+                      </span>
+                    </h3>
                     <p className="text-xs text-slate-400">
-                      Send your questions, restaurant suggestions, or feedback
+                      Messages send directly to WhatsApp at <strong className="text-emerald-400">+234 809 811 4106</strong>
                     </p>
                   </div>
+                </div>
+
+                {/* Instant 1-Click WhatsApp Direct Chat */}
+                <div className="mb-5 p-3.5 rounded-2xl bg-emerald-950/60 border border-emerald-500/40 flex flex-col sm:flex-row items-center justify-between gap-3">
+                  <div className="text-left w-full sm:w-auto">
+                    <p className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Instant WhatsApp Chat</span>
+                    </p>
+                    <p className="text-[11px] text-emerald-300">
+                      Reach me directly on WhatsApp at <strong>+234 809 811 4106</strong>
+                    </p>
+                  </div>
+                  <a
+                    href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hello AroundMe AI! I would like to get in touch with you.')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full sm:w-auto px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer shrink-0"
+                  >
+                    <span>Open WhatsApp</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
                 </div>
 
                 <form onSubmit={handleSendMessage} className="space-y-4">
@@ -428,10 +484,10 @@ export const Footer: React.FC<FooterProps> = ({
                     </button>
                     <button
                       type="submit"
-                      className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-sm shadow-md shadow-amber-500/30 transition-all flex items-center gap-2 cursor-pointer"
+                      className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-sm shadow-md shadow-emerald-500/30 transition-all flex items-center gap-2 cursor-pointer"
                     >
                       <Send className="w-4 h-4" />
-                      <span>Send Message</span>
+                      <span>Send to WhatsApp</span>
                     </button>
                   </div>
                 </form>

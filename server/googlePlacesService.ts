@@ -1,8 +1,10 @@
+import { getVerifiedVenuePhotos } from './verifiedRestaurantPhotos.ts';
+
 export const GOOGLE_MAPS_API_KEY =
   process.env.GOOGLE_MAPS_API_KEY ||
   process.env.VITE_GOOGLE_MAPS_API_KEY ||
   process.env.GEMINI_API_KEY ||
-  '';
+  'AIzaSyA_PDjN-yXnfXIEEbKxWI9hSsjwZalEhWo';
 
 export interface GooglePlaceResult {
   id: string;
@@ -146,17 +148,16 @@ export async function searchGooglePlaces(
         }
       }
 
-      // Guarantee each restaurant has at least 3-4 vivid high-res pictures
-      if (photoUrls.length < 3) {
-        const fallback1 = HIGH_RES_VENUE_PHOTOS[(index * 2) % HIGH_RES_VENUE_PHOTOS.length];
-        const fallback2 = HIGH_RES_VENUE_PHOTOS[(index * 2 + 1) % HIGH_RES_VENUE_PHOTOS.length];
-        if (!photoUrls.includes(fallback1)) photoUrls.push(fallback1);
-        if (!photoUrls.includes(fallback2)) photoUrls.push(fallback2);
+      const placeName = place.displayName?.text || 'Restaurant';
+      const placeCuisine = place.primaryTypeDisplayName?.text || 'Dining';
+      const verified = getVerifiedVenuePhotos(placeName, placeCuisine, city);
+
+      // Use verified photos fallback ONLY if Google Places returned 0 photos
+      if (photoUrls.length === 0) {
+        photoUrls.push(...verified.photos);
       }
 
-      const primaryPhoto =
-        photoUrls[0] ||
-        'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1000&q=80';
+      const primaryPhoto = photoUrls[0] || verified.primary;
 
       const priceLevel = place.priceLevel
         ? place.priceLevel === 'PRICE_LEVEL_VERY_EXPENSIVE'
@@ -176,7 +177,6 @@ export async function searchGooglePlaces(
         place.regularOpeningHours?.weekdayDescriptions?.[0] ||
         (openNow ? 'Open today' : 'Check hours online');
 
-      const placeName = place.displayName?.text || 'Local Restaurant';
       const cleanHandle = placeName.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
 
       return {

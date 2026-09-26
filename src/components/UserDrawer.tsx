@@ -41,7 +41,7 @@ export const UserDrawer: React.FC<UserDrawerProps> = ({
   onSelectFavorite,
   onReSearch,
 }) => {
-  const { currentUser, signInWithGoogle, logout } = useAuth();
+  const { currentUser, setAuthModalOpen, setProfileModalOpen, logout } = useAuth();
   const [favorites, setFavorites] = useState<FavoriteRestaurant[]>([]);
   const [history, setHistory] = useState<SearchHistoryItem[]>([]);
   const [preferences, setPreferences] = useState<UserPreferences>({
@@ -113,11 +113,11 @@ export const UserDrawer: React.FC<UserDrawerProps> = ({
             Connect with Google Sign-In to sync saved restaurants, search history, and dining preferences across devices.
           </p>
           <button
-            onClick={() => signInWithGoogle()}
+            onClick={() => setAuthModalOpen(true)}
             className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-sm transition-all inline-flex items-center gap-2 cursor-pointer"
           >
             <UserIcon className="w-4 h-4 text-amber-400" />
-            <span>Sign In with Google</span>
+            <span>Sign In / Profile</span>
           </button>
         </div>
       );
@@ -350,9 +350,23 @@ export const UserDrawer: React.FC<UserDrawerProps> = ({
               </div>
             )}
             <div>
-              <h3 className="font-bold text-slate-900 text-sm">
-                {currentUser?.displayName || 'Guest User'}
-              </h3>
+              <div className="flex items-center gap-2">
+                <h3 className="font-bold text-slate-900 text-sm">
+                  {currentUser?.displayName || 'Guest User'}
+                </h3>
+                {currentUser && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setProfileModalOpen(true);
+                      onClose();
+                    }}
+                    className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-100 hover:bg-amber-200 text-amber-800 transition-colors cursor-pointer"
+                  >
+                    Edit Profile & Payouts
+                  </button>
+                )}
+              </div>
               <p className="text-xs text-slate-500">
                 {currentUser?.email || 'Sign in to sync your data'}
               </p>

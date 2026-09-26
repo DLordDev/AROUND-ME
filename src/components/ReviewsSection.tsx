@@ -14,7 +14,7 @@ interface ReviewsSectionProps {
 }
 
 export const ReviewsSection: React.FC<ReviewsSectionProps> = ({ place }) => {
-  const { currentUser, signInWithGoogle } = useAuth();
+  const { currentUser, setAuthModalOpen } = useAuth();
   const [reviews, setReviews] = useState<RestaurantReview[]>([]);
   const [loadingReviews, setLoadingReviews] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -215,15 +215,15 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({ place }) => {
         ) : (
           <div className="text-center py-4 space-y-2">
             <p className="text-xs text-slate-600">
-              Sign in with your Google account to drop a verified diner review and rate this place.
+              Sign in with your account to drop a verified diner review and rate this place.
             </p>
             <button
-              onClick={signInWithGoogle}
+              onClick={() => setAuthModalOpen(true)}
               type="button"
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-xs transition-colors cursor-pointer"
             >
               <LogIn className="w-4 h-4 text-amber-400" />
-              <span>Sign In with Google to Review</span>
+              <span>Sign In / Profile to Review</span>
             </button>
           </div>
         )}

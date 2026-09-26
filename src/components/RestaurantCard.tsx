@@ -16,6 +16,7 @@ import {
 import { Place, UserLocation } from '../types';
 import { getTravelEstimates } from '../utils/travelTime';
 import { TransportModeBadge } from './TransportModeBadge';
+import { getVerifiedVenuePhotos } from '../data/verifiedRestaurantPhotos';
 
 interface RestaurantCardProps {
   place: Place;
@@ -41,9 +42,11 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
   const estimates = getTravelEstimates(userLocation, place);
   const [photoIndex, setPhotoIndex] = useState(0);
 
-  const allPhotos = (place.photos && place.photos.length > 0)
-    ? place.photos
-    : [place.photoUrl || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80'];
+  const verified = getVerifiedVenuePhotos(place.name, place.cuisine, userLocation?.city || '');
+  const allPhotos =
+    place.photos && place.photos.length >= 6 && !place.photos[0].includes('photo-1555396273')
+      ? place.photos
+      : verified.photos;
 
   const currentPhoto = allPhotos[photoIndex] || place.photoUrl;
 

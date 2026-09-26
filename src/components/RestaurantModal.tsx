@@ -25,6 +25,7 @@ import {
 import { Place, UserLocation } from '../types';
 import { getTravelEstimates } from '../utils/travelTime';
 import { ReviewsSection } from './ReviewsSection';
+import { getVerifiedVenuePhotos } from '../data/verifiedRestaurantPhotos';
 
 interface RestaurantModalProps {
   place: Place | null;
@@ -53,9 +54,10 @@ export const RestaurantModal: React.FC<RestaurantModalProps> = ({
 
   if (!place) return null;
 
-  const allPhotos = (place.photos && place.photos.length > 0)
+  const verified = getVerifiedVenuePhotos(place.name, place.cuisine, userLocation?.city || 'Benin City');
+  const allPhotos = (place.photos && place.photos.length >= 6 && !place.photos[0].includes('photo-1555396273'))
     ? place.photos
-    : [place.photoUrl || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1000&q=80'];
+    : verified.photos;
 
   const estimates = getTravelEstimates(userLocation, place);
 

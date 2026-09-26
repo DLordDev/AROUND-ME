@@ -13,11 +13,22 @@ import {
 import { db } from './config';
 import { handleFirestoreError, OperationType } from './errorHandler';
 
+export interface PayoutDetails {
+  bankName: string;
+  accountNumber: string;
+  accountName: string;
+  currency: string;
+}
+
 export interface UserProfile {
   uid: string;
   email: string;
   displayName?: string;
   photoURL?: string;
+  phoneNumber?: string;
+  city?: string;
+  bio?: string;
+  payoutDetails?: PayoutDetails;
   createdAt: string;
   updatedAt: string;
 }
@@ -62,6 +73,10 @@ export async function syncUserProfile(user: {
   email: string | null;
   displayName: string | null;
   photoURL: string | null;
+  phoneNumber?: string | null;
+  city?: string | null;
+  bio?: string | null;
+  payoutDetails?: PayoutDetails | null;
 }): Promise<void> {
   if (!user.uid || !user.email) return;
   const path = `users/${user.uid}`;
@@ -75,15 +90,29 @@ export async function syncUserProfile(user: {
         email: user.email,
         displayName: user.displayName || 'Food Explorer',
         photoURL: user.photoURL || '',
+        phoneNumber: user.phoneNumber || '',
+        city: user.city || 'Benin City',
+        bio: user.bio || 'Passionate Nigerian foodie exploring authentic restaurants.',
+        payoutDetails: user.payoutDetails || {
+          bankName: 'Guaranty Trust Bank (GTBank)',
+          accountNumber: '',
+          accountName: user.displayName || '',
+          currency: '₦',
+        },
         createdAt: now,
         updatedAt: now,
       });
     } else {
+      const data = existing.data();
       await setDoc(
         userDocRef,
         {
-          displayName: user.displayName || existing.data().displayName,
-          photoURL: user.photoURL || existing.data().photoURL,
+          displayName: user.displayName || data.displayName,
+          photoURL: user.photoURL || data.photoURL,
+          ...(user.phoneNumber !== undefined ? { phoneNumber: user.phoneNumber } : {}),
+          ...(user.city !== undefined ? { city: user.city } : {}),
+          ...(user.bio !== undefined ? { bio: user.bio } : {}),
+          ...(user.payoutDetails !== undefined ? { payoutDetails: user.payoutDetails } : {}),
           updatedAt: now,
         },
         { merge: true }
@@ -91,6 +120,40 @@ export async function syncUserProfile(user: {
     }
   } catch (err) {
     handleFirestoreError(err, OperationType.WRITE, path);
+  }
+}
+
+export async function getUserProfile(userId: string): Promise<UserProfile | null> {
+  const path = `users/${userId}`;
+  try {
+    const userDocRef = doc(db, 'users', userId);
+    const snap = await getDoc(userDocRef);
+    if (snap.exists()) {
+      return snap.data() as UserProfile;
+    }
+    return null;
+  } catch (err) {
+    handleFirestoreError(err, OperationType.GET, path);
+    return null;
+  }
+}
+
+export async function updateUserProfile(userId: string, data: Partial<UserProfile>): Promise<void> {
+  const path = `users/${userId}`;
+  try {
+    const userDocRef = doc(db, 'users', userId);
+    const now = new Date().toISOString();
+    await setDoc(
+      userDocRef,
+      {
+        ...data,
+        updatedAt: now,
+      },
+      { merge: true }
+    );
+  } catch (err) {
+    handleFirestoreError(err, OperationType.WRITE, path);
+    throw err;
   }
 }
 
